@@ -36,26 +36,26 @@ import java.util.jar.JarFile;
 /**
  * Created by Graham on 10/24/2016.
  */
-@Info(name = "LWCRemove", version = "1.0", color = ChatColor.AQUA, authors = "InfamousGerman", info = "This is a plugin used by moderators to remove locks made during a certain timeframe within one specific region", displayName = "LWCLockRemove")
+
+@Info(name = "LWCRemove", version = "1.0", color = ChatColor.AQUA, authors = "InfamousGerman", info = "This is a plugin used by moderators to remove locks within a cubic region", displayName = "LWCLockRemove")
 public class LWCRemove extends JavaModule {
 
-    static LWCRemove instance = null;
     @Override
     public void onEnable() {
-        instance = this;
+
     }
 
-
+    @Override
     public void onDisable() {
 
     }
 
     @OCmd(cmd = "lwcradiusremove %i",
-            info = "removes locks in a certain radius",
+            info = "removes locks in a cubic region with a given radius",
             perm = "mod")
-    void command(Player p,String []args) {
+    void command(Player p, String []args) {
         int radius  = Integer.parseInt(args[1]);
-        Location center = p.getLocation();
+        Location center = p.getLocation().clone();
         Location first = new Location(p.getWorld(), center.getX() + radius, center.getY() + radius, center.getZ() + radius);
         int firstX = (int)first.getX();
         int firstY = (int)first.getY();
@@ -65,10 +65,9 @@ public class LWCRemove extends JavaModule {
         int secondY = (int)second.getY();
         int secondZ = (int)second.getZ();
         LWC lwc = com.griefcraft.lwc.LWC.getInstance();
-        List<Protection> protections = lwc.getPhysicalDatabase().loadProtections(first.getWorld().getName(), firstX, secondX, firstY, secondY, firstZ, secondZ);
+        final List<Protection> protections = lwc.getPhysicalDatabase().loadProtections(first.getWorld().getName(), firstX, secondX, firstY, secondY, firstZ, secondZ);
         for (Protection protection : protections) {
             protection.remove();
         }
     }
 }
-
